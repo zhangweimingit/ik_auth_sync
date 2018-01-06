@@ -16,7 +16,7 @@ define Package/ik_auth_sync
 	CATEGORY:=Network
 	SUBMENU:=iKuai
 	TITLE:=ik_auth_sync
-	DEPENDS:=+libpthread +libstdcpp +boost-program_options +libcrypto +libopenssl +lib_event
+	DEPENDS:=+libpthread +libstdcpp +boost-program_options boost-system +libcrypto +libopenssl +lib_event
 endef
 
 include $(TOPDIR)/package/ik_apps/ik_rules.mk
