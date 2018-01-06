@@ -98,9 +98,8 @@ int main(int argc, const char **argv)
 	::unlink("/tmp/dhcp_option_info_auth");
 	datagram_protocol::socket dhcp_sock(io_service,"/tmp/dhcp_option_info_auth");
 
-	cerr << "Fail to start event thr" << endl;
 	stream_descriptor host_pipe(io_service, newhost_pipe[0]);
-	stream_descriptor auth_pipe(io_service, newhost_pipe[0]);
+	stream_descriptor auth_pipe(io_service, newauth_pipe[0]);
 
 
 	while (1) 
