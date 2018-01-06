@@ -1,19 +1,19 @@
 #ifndef MD5_HPP_
 #define MD5_HPP_
 
-//#include <openssl/md5.h>
+#include <openssl/md5.h>
 #include <string>
 
 class MD5 {
 public:
 	MD5() {
 		reset();
-		//MD5_Init(&ctx);
+		MD5_Init(&ctx);
 	}
 
 	void append(void *data, uint32_t size)
 	{
-		//MD5_Update(&ctx, data, size);
+		MD5_Update(&ctx, data, size);
 	}
 
 	void append(std::string str)
@@ -23,7 +23,7 @@ public:
 
 	void reset(void)
 	{
-		//MD5_Init(&ctx);
+		MD5_Init(&ctx);
 	}
 
 	void md5_once(void *data, uint32_t size, uint8_t md5[16])
@@ -35,11 +35,11 @@ public:
 	
 	void final(uint8_t md5[16])
 	{
-		//MD5_Final(md5, &ctx);
+		MD5_Final(md5, &ctx);
 	}
 
 private:
-	//MD5_CTX ctx;
+	MD5_CTX ctx;
 };
 
 #endif
