@@ -55,9 +55,10 @@ void auth_message::constuct_check_client_res_msg()
 	root.put("res1_", server_chap_.res1_);
 	root.put("chap_str_", server_chap_.chap_str_);
 
-	write_json(stream, root,false);
+	write_json(stream, root);
 	send_body_ = stream.str();
 
+	cout << send_body_.size() << endl;
 	set_header(CHECK_CLIENT_RESPONSE);
 	send_buffers_.clear();
 	send_buffers_.push_back(boost::asio::buffer(header_buffer_));
