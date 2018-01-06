@@ -2,33 +2,37 @@
 #define CAPACITY_QUEUE_HPP_
 
 #include <deque>
-#include <string>
-
-#include "sync_msg.hpp"
 
 template <typename T>
-class CapacityQueue {
+class CapacityQueue 
+{
 public:
 	CapacityQueue(uint32_t max_size)
-		:max_size_(max_size) {
+		:max_size_(max_size) 
+	{
 	}
 
-	uint32_t size(void) {
+	uint32_t size(void) 
+	{
 		return clients_.size();
 	}
 
-	void push_back(T &entry) {
+	void push_back(T &entry) 
+	{
 		clients_.push_back(entry);
-		if (max_size_ && clients_.size() > max_size_) {
+		if (max_size_ && clients_.size() > max_size_)
+		{
 			clients_.pop_front();
 		}
 	}
 
-	T &front(void) {
+	T &front(void) 
+	{
 		return clients_.front();
 	}
 
-	void pop_front(void) {
+	void pop_front(void) 
+	{
 		clients_.pop_front();
 	}
 	

@@ -4,8 +4,6 @@
 #include <openssl/md5.h>
 #include <string>
 
-namespace cppbase {
-
 class MD5 {
 public:
 	MD5() {
@@ -43,8 +41,6 @@ public:
 private:
 	MD5_CTX ctx;
 };
-
-}
 
 #endif
 

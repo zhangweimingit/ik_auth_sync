@@ -1,6 +1,5 @@
 TARGET=ik_auth_sync
-OBJS=main.o sync_config.o socket.o sync_client.o \
-	event_poll.o sync_msg.o thread.o kernel_event.o
+OBJS=main.o auth_config.o client.o auth_message.o
 
 CPPFLAGS=-DNDEBUG $(EXTRA_CPPFLAGS)
 CFLAGS=-Wall $(EXTRA_CFLAGS)
