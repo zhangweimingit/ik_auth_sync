@@ -1,7 +1,7 @@
 #ifndef MD5_HPP_
 #define MD5_HPP_
 
-#include <openssl/md5.h>
+//#include <openssl/md5.h>
 #include <string>
 
 class MD5 {
