@@ -94,6 +94,7 @@ int main(int argc, const char **argv)
 	CapacityQueue<kernel_info> auth_queue(sync_config.na_queue_size);
 
 	boost::asio::io_service io_service;
+	boost::asio::io_service::work work(io_service);
 
 	::unlink("/tmp/dhcp_option_info_auth");
 	datagram_protocol::socket dhcp_sock(io_service,"/tmp/dhcp_option_info_auth");
