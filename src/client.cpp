@@ -30,7 +30,7 @@ void client::operator()(error_code ec, std::size_t n)
 			case CHECK_CLIENT:
 				auth_message_.parse_check_client_req_msg();
 				auth_message_.constuct_check_client_res_msg();
-				yield boost::asio::async_write(socket_, boost::asio::buffer(auth_message_.send_buffers_), std::ref(*this));
+				yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
 				break;
 			default:
 				break;
