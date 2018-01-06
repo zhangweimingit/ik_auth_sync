@@ -18,23 +18,21 @@ client::client(boost::asio::io_service& io_service, const std::string& address, 
 
 void client::operator()(error_code ec, std::size_t n)
 {
-	if (!ec) reenter(this)
+	if (!ec) reenter(this) for (;;)
 	{
-		for (;;)
+
+		yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.header_buffer_),std::ref(*this));
+		auth_message_.parse_header();
+		yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.recv_body_), std::ref(*this));
+		switch (auth_message_.header_.type_)
 		{
-			yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.header_buffer_),std::ref(*this));
-			auth_message_.parse_header();
-			yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.recv_body_), std::ref(*this));
-			switch (auth_message_.header_.type_)
-			{
-			case CHECK_CLIENT:
-				auth_message_.parse_check_client_req_msg();
-				auth_message_.constuct_check_client_res_msg();
-				yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
-				yield break;
-			default:
-				yield break;
-			}
+		case CHECK_CLIENT:
+			auth_message_.parse_check_client_req_msg();
+			auth_message_.constuct_check_client_res_msg();
+			yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
+			break;
+		default:
+			break;
 		}
 	}
 }
