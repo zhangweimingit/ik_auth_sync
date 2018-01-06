@@ -44,7 +44,6 @@ void auth_message::parse_header()
 	}
 
 	recv_body_.resize(header_.len_);//Adjust the size, be ready to accept the message body
-	std::cout << "parse_header success type is " << (uint32_t)header_.type_ << " len is "  << header_.len_  << std::endl;
 }
 
 //Verify the validity of the client
@@ -58,7 +57,7 @@ void auth_message::constuct_check_client_res_msg()
 
 	write_json(stream, root);
 	send_body_  = stream.str();
-
+	std::cout << send_body_.size() << std::endl;
 	set_header(CHECK_CLIENT_RESPONSE);
 	send_buffers_.clear();
 	send_buffers_.push_back(boost::asio::buffer(header_buffer_));
