@@ -79,7 +79,7 @@ void auth_message::parse_check_client_req_msg()
 
 	string comp = client_chap.chap_str_ + config.server_pwd_;
 
-	MD5 md5;
+	md5 md5;
 	char ret[16];
 
 	if (client_chap.chap_str_.size() != 32)
