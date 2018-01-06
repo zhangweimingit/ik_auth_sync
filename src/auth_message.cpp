@@ -57,7 +57,7 @@ void auth_message::constuct_check_client_res_msg()
 
 	write_json(stream, root);
 	send_body_ = stream.str();
-	cout << send_body_ << endl;
+
 	set_header(CHECK_CLIENT_RESPONSE);
 	send_buffers_.clear();
 	send_buffers_.push_back(boost::asio::buffer(header_buffer_));
@@ -81,15 +81,15 @@ void auth_message::parse_check_client_req_msg()
 	string comp = client_chap.chap_str_ + config.server_pwd_;
 
 	md5 md5;
-	char ret[16];
+	uint8_t ret[16];
 
 	if (client_chap.chap_str_.size() != 32)
 	{
 		throw runtime_error("chap length error");
 	}
 
-	md5.md5_once(const_cast<char*>(comp.data()), comp.size(), (uint8_t*)ret);
-	server_chap_.chap_str_ = string(ret);
+	md5.md5_once(const_cast<char*>(comp.data()), comp.size(), ret);
+	server_chap_.chap_str_.assign(reinterpret_cast<char*>(ret), 16);
 	server_chap_.gid_ = config.gid;
 }
 
