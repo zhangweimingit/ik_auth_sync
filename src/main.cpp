@@ -120,7 +120,7 @@ int main(int argc, const char **argv)
 		client client(io_service,sync_config.host_,sync_config.port_);
 		client();
 		io_service.run();
-wait:
+
 		sleep(3);
 		continue;
 	}
