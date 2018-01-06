@@ -44,7 +44,7 @@ void auth_message::parse_header()
 	}
 
 	recv_body_.resize(header_.len_);//Adjust the size, be ready to accept the message body
-	std::cout << "parse_header success type is " << header_.type_ << " len is "  << header_.len_  << std::endl;
+	std::cout << "parse_header success type is " << (uint32_t)header_.type_ << " len is "  << header_.len_  << std::endl;
 }
 
 //Verify the validity of the client
@@ -90,7 +90,7 @@ void auth_message::parse_check_client_req_msg()
 	}
 
 	md5.md5_once(const_cast<char*>(comp.data()), comp.size(), (uint8_t*)ret);
-	server_chap_.chap_str_ = string(ret,16);
+	server_chap_.chap_str_ = string(ret);
 	server_chap_.gid_ = config.gid;
 }
 
