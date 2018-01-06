@@ -16,7 +16,7 @@ client::client(boost::asio::io_service& io_service, const std::string& address, 
 	boost::asio::connect(socket_, iterator);
 }
 
-void client::operator()(error_code ec = error_code(), std::size_t n = 0)
+void client::operator()(error_code ec, std::size_t n)
 {
 	if (!ec) reenter(this)
 	{
