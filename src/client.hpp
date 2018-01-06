@@ -16,7 +16,6 @@ public:
 	void do_send_auth_info(const auth_info& msg);
 
 private:
-	boost::asio::io_service& io_service_;
 	auth_message auth_message_;
 	tcp::socket socket_;
 };

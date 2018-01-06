@@ -5,8 +5,7 @@ using std::placeholders::_1;
 using boost::system::error_code;
 
 client::client(boost::asio::io_service& io_service, const std::string& address, const std::string& port)
-	: io_service_(io_service),
-	socket_(io_service)
+	: socket_(io_service)
 {
 	boost::system::error_code ec;
 	tcp::resolver resolver(io_service);
@@ -42,7 +41,7 @@ void client::operator()(error_code ec, std::size_t n)
 
 void client::send_auth_info(const auth_info& msg)
 {
-	io_service_.post(std::bind(&client::do_send_auth_info, this, msg));
+	socket_.get_io_service().post(std::bind(&client::do_send_auth_info, this, msg));
 }
 
 void client::do_send_auth_info(const auth_info& msg)
