@@ -53,8 +53,7 @@ void auth_message::constuct_check_client_res_msg()
 	stringstream stream;
 	root.put("gid_", server_chap_.gid_);
 	root.put("res1_", server_chap_.res1_);
-	//root.put("chap_str_", server_chap_.chap_str_);
-	root.put("chap_str_", string("aaaaaaaaaaaaaaaa"));
+	root.put("chap_str_", server_chap_.chap_str_);
 	write_json(stream, root);
 	send_body_ = stream.str();
 
