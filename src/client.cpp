@@ -5,7 +5,8 @@ using std::placeholders::_1;
 using boost::system::error_code;
 
 client::client(boost::asio::io_service& io_service, const std::string& address, const std::string& port)
-	: socket_(io_service)
+	: io_service_(io_service),
+	socket_(io_service)
 {
 	boost::system::error_code ec;
 	tcp::resolver resolver(io_service);
@@ -21,15 +22,15 @@ void client::operator()(error_code ec, std::size_t n)
 	{
 		for (;;)
 		{
-			yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.header_buffer_),*this);
+			yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.header_buffer_),this);
 			auth_message_.parse_header();
-			yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.recv_body_), *this);
+			yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.recv_body_), this);
 			switch (auth_message_.header_.type_)
 			{
 			case CHECK_CLIENT:
 				auth_message_.parse_check_client_req_msg();
 				auth_message_.constuct_check_client_res_msg();
-				yield boost::asio::async_write(socket_, boost::asio::buffer(auth_message_.send_buffers_), *this);
+				yield boost::asio::async_write(socket_, boost::asio::buffer(auth_message_.send_buffers_), this);
 				break;
 			default:
 				break;
