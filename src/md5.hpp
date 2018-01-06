@@ -32,7 +32,7 @@ public:
 		append(data, size);
 		final(md5);
 	}
-	
+
 	void final(uint8_t md5[16])
 	{
 		MD5_Final(md5, &ctx);
