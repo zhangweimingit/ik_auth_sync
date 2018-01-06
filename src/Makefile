@@ -1,5 +1,5 @@
 TARGET=ik_auth_sync
-OBJS=main.o auth_config.o client.o auth_message.o md5.o
+OBJS=main.o auth_config.o client.o auth_message.o
 
 CPPFLAGS=-DNDEBUG $(EXTRA_CPPFLAGS)
 CFLAGS=-Wall $(EXTRA_CFLAGS)
