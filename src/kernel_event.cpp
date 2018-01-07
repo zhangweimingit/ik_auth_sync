@@ -49,20 +49,6 @@ void KernelEvtThr::start_work()
 {
 	cout << "Ready to receive kernel event" << endl;
 
-	while (true)
-	{
-		kernel_info info;
-		memcpy(info.mac_, "aa:bb:cc:ee:dd:ff", mac_str_len);
-		info.mac_[mac_str_len] = '\0';
-		receive_new_host(info);
-		sleep(3);
-
-
-		memcpy(info.mac_, "aa:bb:cc:ee:dd:ff", mac_str_len);
-		info.mac_[mac_str_len] = '\0';
-		receive_new_auth(info);
-	}
-
 	//ik_event_loop();
 }
 
