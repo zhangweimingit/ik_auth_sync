@@ -44,31 +44,27 @@ void client::operator()(boost::system::error_code ec, std::size_t n)
 {
 	auth_info auth;
 
-	if (!ec) reenter(this) 
+	if (!ec) reenter(this) for (;;)
 	{
-		for (;;)
+		std::cout << "AUTH_RESPONSE" << std::endl;
+		yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.header_buffer_),std::ref(*this));
+		auth_message_.parse_header();
+		yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.recv_body_), std::ref(*this));
+		switch (auth_message_.header_.type_)
 		{
-			std::cout << "AUTH_RESPONSE" << std::endl;
-			yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.header_buffer_), std::ref(*this));
-			auth_message_.parse_header();
-			yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.recv_body_), std::ref(*this));
-			switch (auth_message_.header_.type_)
-			{
-			case CHECK_CLIENT:
-				auth_message_.parse_check_client_req_msg();
-				auth_message_.constuct_check_client_res_msg();
-				yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
-				break;
-			case AUTH_RESPONSE:
-				auth_message_.parse_auth_res_msg(auth);
-				auth.auth_time_ = time(0);
-				mac_auth_[auth.mac_] = auth;
-				break;
-			default:
-				break;
-			}
+		case CHECK_CLIENT:
+			auth_message_.parse_check_client_req_msg();
+			auth_message_.constuct_check_client_res_msg();
+			yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
+			yield break;
+		case AUTH_RESPONSE:
+			auth_message_.parse_auth_res_msg(auth);
+			auth.auth_time_ = time(0);
+			mac_auth_[auth.mac_] = auth;
+			yield break;
+		default:
+			yield break;
 		}
-
 	}
 	else
 	{
