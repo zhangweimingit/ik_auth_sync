@@ -4,6 +4,7 @@
 #include <openssl/md5.h>
 #include <string>
 
+//class name md5 Must be lowercase. <openssl/md5.h> has MD5
 class md5 {
 public:
 	md5() {
