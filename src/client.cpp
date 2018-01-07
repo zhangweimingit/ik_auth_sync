@@ -40,12 +40,12 @@ void client::start2()
 	boost::asio::connect(socket_, iterator);
 
 	do_read_auth_pipe();
-	coroutine();
+	coroutine_ = boost::asio::coroutine();
 	(*this)();
 }
 void client::operator()(boost::system::error_code ec, std::size_t n)
 {
-	if (!ec) reenter(this) for (;;)
+	if (!ec) reenter(coroutine_) for (;;)
 	{
 		std::cout << "AUTH_RESPONSE" << std::endl;
 		yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.header_buffer_),std::ref(*this));

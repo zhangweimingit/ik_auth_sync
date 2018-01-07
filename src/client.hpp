@@ -10,7 +10,7 @@
 using boost::asio::ip::tcp;
 using boost::asio::local::datagram_protocol;
 using boost::asio::posix::stream_descriptor;
-class client:boost::asio::coroutine
+class client
 {
 
 public:
@@ -56,6 +56,7 @@ private:
 
 	char dhcp_buffer_[128];
 	capacity_queue<kernel_info> auth_queue_;
+	boost::asio::coroutine coroutine_;
 };
 
 #endif
