@@ -42,8 +42,6 @@ void client::start2()
 }
 void client::operator()(boost::system::error_code ec, std::size_t n)
 {
-	auth_info auth;
-
 	if (!ec) reenter(this) for (;;)
 	{
 		std::cout << "AUTH_RESPONSE" << std::endl;
@@ -56,14 +54,18 @@ void client::operator()(boost::system::error_code ec, std::size_t n)
 			auth_message_.parse_check_client_req_msg();
 			auth_message_.constuct_check_client_res_msg();
 			yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
-			yield break;
+			std::cout << "wo hui lai le" << std::endl;
+			break;
 		case AUTH_RESPONSE:
+		{
+			auth_info auth;
 			auth_message_.parse_auth_res_msg(auth);
 			auth.auth_time_ = time(0);
 			mac_auth_[auth.mac_] = auth;
-			yield break;
+		}
+			break;
 		default:
-			yield break;
+			break;
 		}
 	}
 	else
