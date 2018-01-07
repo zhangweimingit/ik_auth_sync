@@ -17,8 +17,7 @@ using boost::asio::posix::stream_descriptor;
 class client
 {
 public:
-	client(io_service& io_service, const string& address, const string& port,
-	int host_pipe, int auth_pipe,const string& dhcp_path, KernelEvtThr& kernel_event);
+	client(io_service& io_service, tcp::resolver::iterator iterator,const string& dhcp_path);
 
 	void start1();//Read host information from pipes and DHCP
 	void start2();//Read auth information from pipes and send to server
@@ -39,9 +38,7 @@ private:
 
 	void find_auth_info_to_kernel(const string& mac);
 
-	io_service& io_service_;
-	string address_;
-	string port_;
+	tcp::resolver::iterator iterator_;
 
 	tcp::socket socket_;
 	stream_descriptor host_pipe_;
@@ -49,7 +46,7 @@ private:
 	datagram_protocol::socket dhcp_sock_;
 
 	//Provides an interface to send authentication information to the kernel
-	KernelEvtThr& kernel_event_;
+	std::shared_ptr<KernelEvtThr> kernel_event_;
 
 	//buffer for tcp socket
 	auth_message auth_message_;

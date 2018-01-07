@@ -60,40 +60,19 @@ int main(int argc, const char **argv)
 		}
 	}
 
-	int newhost_pipe[2];
-	int newauth_pipe[2];
 
-	if (pipe(newhost_pipe)) {
-		cerr << "Fail to open newhost pipe" << endl;
-		exit(1);
-	}
-	if (pipe(newauth_pipe)) {
-		cerr << "Fail to open newauth pipe" << endl;
-		exit(1);
-	}
-
-	KernelEvtThr evt_thr(newhost_pipe[1], newauth_pipe[1]);
-
-	if (!evt_thr.init()) 
-	{
-		cerr << "Fail to init event thr" << endl;
-		exit(1);
-	}
-
-	if (!evt_thr.start()) 
-	{
-		cerr << "Fail to start event thr" << endl;
-		exit(1);
-	}
 
 	boost::asio::io_service io_service;
 	boost::asio::io_service::work work(io_service);
+	tcp::resolver resolver(io_service);
+	tcp::resolver::query query(sync_config.host_, sync_config.port_);
+	tcp::resolver::iterator iterator = resolver.resolve(query);
 
 	std::remove("/tmp/dhcp_option_info_auth");
-	client client(io_service, sync_config.host_, sync_config.port_,
-		newhost_pipe[0], newauth_pipe[0], "/tmp/dhcp_option_info_auth", evt_thr);
+	client client(io_service, iterator,"/tmp/dhcp_option_info_auth");
 
 	client.start1();
+
 	while (1) 
 	{
 		try

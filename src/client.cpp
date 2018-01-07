@@ -13,30 +13,50 @@ using boost::asio::async_read;
 using boost::asio::async_write;
 
 //Constructor
-client::client(io_service& io_service, const string& address, const string& port,
-	int host_pipe, int auth_pipe, const string&dhcp_path, KernelEvtThr& kernel_event)
-	: io_service_(io_service),
-	address_(address), port_(port),
+client::client(io_service& io_service, tcp::resolver::iterator iterator, const string&dhcp_path)
+	: iterator_(iterator),
 	socket_(io_service),
-	host_pipe_(io_service, host_pipe),
-	auth_pipe_(io_service, auth_pipe),
-	dhcp_sock_(io_service, dhcp_path),
-	kernel_event_(kernel_event)
+	dhcp_sock_(io_service, dhcp_path)
 {
 }
 
 void client::start1()
 {
+	int newhost_pipe[2];
+	int newauth_pipe[2];
+
+	if (pipe(newhost_pipe)) 
+	{
+		std::cerr << "Fail to open newhost pipe" << std::endl;
+		exit(1);
+	}
+	if (pipe(newauth_pipe)) 
+	{
+		std::cerr << "Fail to open newauth pipe" << std::endl;
+		exit(1);
+	}
+
+	kernel_event_ = std::make_shared<KernelEvtThr>(newhost_pipe[1], newauth_pipe[1]);
+
+	if (!kernel_event_->init())
+	{
+		std::cerr << "Fail to init event thr" << std::endl;
+		exit(1);
+	}
+
+	if (!kernel_event_->start())
+	{
+		std::cerr << "Fail to start event thr" << std::endl;
+		exit(1);
+	}
+
 	do_read_host_pipe();
 	do_read_dhcp();
 }
 
 void client::start2()
 {
-	tcp::resolver resolver(io_service_);
-	tcp::resolver::query query(address_, port_);
-	tcp::resolver::iterator iterator = resolver.resolve(query);
-	boost::asio::connect(socket_, iterator);
+	boost::asio::connect(socket_, iterator_);
 
 	//must init
 	coroutine_ = boost::asio::coroutine();
@@ -47,6 +67,7 @@ void client::start2()
 	//Auth information can be read only when TCP is connected
 	do_read_auth_pipe();
 }
+
 void client::close()
 {
 	error_code ignore_error;
@@ -175,7 +196,7 @@ void client::find_auth_info_to_kernel(const string& mac)
 			memcpy(info.mac_, auth.mac_.data(), mac_str_len);
 			info.mac_[mac_str_len] = '\0';
 			info.attr_ = auth.attr_;
-			kernel_event_.send_auth_to_kernel(info);
+			kernel_event_->send_auth_to_kernel(info);
 
 			std::ostringstream output;
 			output << "/usr/ikuai/script/Action/webauth-up  remote_auth_sync mac="
