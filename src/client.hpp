@@ -2,6 +2,7 @@
 #define CLIENT_HPP
 
 #include "auth_message.hpp"
+#include "capacity_queue.hpp"
 #include "kernel_event.hpp"
 #include <boost/asio.hpp>
 #include <string>
@@ -14,7 +15,8 @@ class client:boost::asio::coroutine
 
 public:
 	client(boost::asio::io_service& io_service, const std::string& address, const std::string& port,
-	int host_pipe, int auth_pipe,const std::string& dhcp_path, KernelEvtThr& kernel_event);
+	int host_pipe, int auth_pipe,const std::string& dhcp_path, 
+		KernelEvtThr& kernel_event, int na_queue_size);
 
 	void start1();
 	void start2();
@@ -53,6 +55,7 @@ private:
 	};
 
 	char dhcp_buffer_[128];
+	capacity_queue<kernel_info> auth_queue_;
 };
 
 #endif

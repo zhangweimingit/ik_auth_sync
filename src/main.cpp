@@ -8,7 +8,6 @@
 #include <boost/program_options.hpp>
 #include "auth_config.hpp"
 #include "kernel_event.hpp"
-#include "capacity_queue.hpp"
 #include "auth_message.hpp"
 #include "client.hpp"
 using namespace std;
@@ -87,22 +86,19 @@ int main(int argc, const char **argv)
 		exit(1);
 	}
 
-	
-	CapacityQueue<kernel_info> auth_queue(sync_config.na_queue_size);
-
 	boost::asio::io_service io_service;
 	boost::asio::io_service::work work(io_service);
 
 	std::remove("/tmp/dhcp_option_info_auth");
 	client client(io_service, sync_config.host_, sync_config.port_,
-		newhost_pipe[0], newauth_pipe[0], "/tmp/dhcp_option_info_auth", evt_thr);
+		newhost_pipe[0], newauth_pipe[0], "/tmp/dhcp_option_info_auth", 
+		evt_thr, sync_config.na_queue_size);
 
 	client.start1();
 	while (1) 
 	{
 		try
 		{
-
 			client.start2();
 
 			std::cout << "success to connect server!" << std::endl;

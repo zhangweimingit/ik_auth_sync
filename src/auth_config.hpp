@@ -14,7 +14,6 @@ struct auth_config
 	std::string server_pwd_;
 
 	uint32_t na_queue_size; // new auth queue size, buffer the auth which is not sent successfully
-	
 	uint32_t gid;
 	uint32_t expired_time; /*sec*/
 };

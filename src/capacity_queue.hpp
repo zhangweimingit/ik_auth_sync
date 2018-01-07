@@ -4,10 +4,10 @@
 #include <deque>
 
 template <typename T>
-class CapacityQueue 
+class capacity_queue 
 {
 public:
-	CapacityQueue(uint32_t max_size)
+	capacity_queue(uint32_t max_size)
 		:max_size_(max_size) 
 	{
 	}

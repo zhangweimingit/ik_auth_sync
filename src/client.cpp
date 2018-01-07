@@ -13,14 +13,16 @@ using boost::system::error_code;
 using boost::serialization::singleton;
 
 client::client(boost::asio::io_service& io_service, const std::string& address, const std::string& port,
-	int host_pipe, int auth_pipe, const std::string&dhcp_path, KernelEvtThr& kernel_event)
+	int host_pipe, int auth_pipe, const std::string&dhcp_path, 
+	KernelEvtThr& kernel_event, int na_queue_size)
 	: io_service_(io_service),
 	address_(address), port_(port),
 	socket_(io_service),
 	host_pipe_(io_service, host_pipe),
 	auth_pipe_(io_service, auth_pipe),
 	dhcp_sock_(io_service, dhcp_path),
-	kernel_event_(kernel_event)
+	kernel_event_(kernel_event),
+	auth_queue_(na_queue_size)
 {
 }
 void client::start1()
@@ -38,6 +40,7 @@ void client::start2()
 	boost::asio::connect(socket_, iterator);
 
 	do_read_auth_pipe();
+	coroutine();
 	(*this)();
 }
 void client::operator()(boost::system::error_code ec, std::size_t n)
