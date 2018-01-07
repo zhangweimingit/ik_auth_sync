@@ -35,25 +35,25 @@ void client::start1()
 		exit(1);
 	}
 
-	kernel_event_ = std::make_shared<KernelEvtThr>(newhost_pipe[1], newauth_pipe[1]);
+	kernel_event_ptr_ = std::make_shared<KernelEvtThr>(newhost_pipe[1], newauth_pipe[1]);
 
-	if (!kernel_event_->init())
+	if (!kernel_event_ptr_->init())
 	{
 		std::cerr << "Fail to init event thr" << std::endl;
 		exit(1);
 	}
 
-	if (!kernel_event_->start())
+	if (!kernel_event_ptr_->start())
 	{
 		std::cerr << "Fail to start event thr" << std::endl;
 		exit(1);
 	}
 
-	host_pipe_ = std::make_shared<stream_descriptor>(socket_.get_io_service(), newhost_pipe[0]);
-	auth_pipe_ = std::make_shared<stream_descriptor>(socket_.get_io_service(), newauth_pipe[0]);
+	host_pipe_ptr_ = std::make_shared<stream_descriptor>(socket_.get_io_service(), newhost_pipe[0]);
+	auth_pipe_ptr_ = std::make_shared<stream_descriptor>(socket_.get_io_service(), newauth_pipe[0]);
 	
 	std::remove("/tmp/dhcp_option_info_auth");
-	dhcp_sock_ = std::make_shared<datagram_protocol::socket>(socket_.get_io_service(), "/tmp/dhcp_option_info_auth");
+	dhcp_sock_ptr_ = std::make_shared<datagram_protocol::socket>(socket_.get_io_service(), "/tmp/dhcp_option_info_auth");
 
 	do_read_host_pipe();
 	do_read_dhcp();
@@ -123,7 +123,7 @@ void client::operator()(error_code ec, std::size_t n)
 
 void client::do_read_host_pipe()
 {
-	async_read(*host_pipe_, boost::asio::buffer(host_buffer_), 
+	async_read(*host_pipe_ptr_, boost::asio::buffer(host_buffer_),
 		std::bind(&client::handle_host_pipe, this, _1, _2));
 }
 
@@ -144,7 +144,7 @@ void client::handle_host_pipe(const error_code&ec, std::size_t)
 
 void client::do_read_auth_pipe()
 {
-	async_read(*auth_pipe_, boost::asio::buffer(auth_buffer_),
+	async_read(*auth_pipe_ptr_, boost::asio::buffer(auth_buffer_),
 		std::bind(&client::handle_read_auth_pipe, this, _1, _2));
 }
 
@@ -160,7 +160,7 @@ void client::handle_read_auth_pipe(const error_code&ec, std::size_t)
 			auth_info info;
 			info.mac_ = kernel_auth_info_.mac_;
 			info.attr_ = kernel_auth_info_.attr_;
-			info.duration_ = sync_config.expired_time;
+			info.duration_ = sync_config.duration_;
 			auth_message_.constuct_auth_res_msg(info);
 			async_write(socket_, auth_message_.send_buffers_,[](const error_code&ec, size_t) {});
 			do_read_auth_pipe();
@@ -176,15 +176,15 @@ void client::handle_read_auth_pipe(const error_code&ec, std::size_t)
 
 void client::do_read_dhcp()
 {
-	dhcp_sock_->async_receive(boost::asio::buffer(dhcp_buffer_),
+	dhcp_sock_ptr_->async_receive(boost::asio::buffer(dhcp_buffer_),
 		std::bind(&client::handle_read_dhcp, this, _1, _2));
 }
 
-void client::handle_read_dhcp(const boost::system::error_code&ec, std::size_t)
+void client::handle_read_dhcp(const error_code&ec, std::size_t bytes)
 {
 	if (!ec)
 	{
-		string dhcp(dhcp_buffer_);
+		string dhcp(dhcp_buffer_, bytes);
 		std::cout << "recv dhcp: " << dhcp << std::endl;
 		string::size_type pos = dhcp.find('|');
 		string mac = dhcp.substr(pos + 1, mac_str_len);
@@ -203,19 +203,19 @@ void client::find_auth_info_to_kernel(const string& mac)
 {
 	if (mac_auth_.count(mac))
 	{
-		auto & auth = mac_auth_[mac];
+		auth_info& auth = mac_auth_[mac];
 
-		if ( (time(0) - auth.auth_time_) < auth.duration_)
+		if ((time(0) - auth.auth_time_) < auth.duration_)
 		{
 			kernel_info info;
 			memcpy(info.mac_, auth.mac_.data(), mac_str_len);
 			info.mac_[mac_str_len] = '\0';
 			info.attr_ = auth.attr_;
-			kernel_event_->send_auth_to_kernel(info);
+			kernel_event_ptr_->send_auth_to_kernel(info);
 
 			std::ostringstream output;
 			output << "/usr/ikuai/script/Action/webauth-up  remote_auth_sync mac="
-				<< auth.mac_ << "  authtype=" << auth.attr_ << " timeout=" << auth.duration_ - (time(NULL) - auth.auth_time_);
+				<< auth.mac_ << "  authtype=" << auth.attr_ << " timeout=" << auth.duration_ - (time(0) - auth.auth_time_);
 			system(output.str().c_str());
 			std::cout << "send_auth_to_kernel" << std::endl;
 		}

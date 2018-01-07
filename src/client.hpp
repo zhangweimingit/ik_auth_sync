@@ -19,9 +19,9 @@ class client
 public:
 	client(io_service& io_service, tcp::resolver::iterator iterator);
 
-	void start1();//Read host information from pipes and DHCP
+	void start1(void);//Read host information from pipes and DHCP
 	void start2(const error_code& ec);//Read auth information from pipes and send to server
-	void close();//close tcp socket
+	void close(void);//close tcp socket
 
 	//main loop
 	void operator()(error_code ec = error_code(), std::size_t n = 0);
@@ -41,12 +41,12 @@ private:
 	tcp::resolver::iterator iterator_;
 
 	tcp::socket socket_;
-	std::shared_ptr<stream_descriptor> host_pipe_;
-	std::shared_ptr<stream_descriptor> auth_pipe_;
-	std::shared_ptr<datagram_protocol::socket> dhcp_sock_;
+	std::shared_ptr<stream_descriptor> host_pipe_ptr_;
+	std::shared_ptr<stream_descriptor> auth_pipe_ptr_;
+	std::shared_ptr<datagram_protocol::socket> dhcp_sock_ptr_;
 
 	//Provides an interface to send authentication information to the kernel
-	std::shared_ptr<KernelEvtThr> kernel_event_;
+	std::shared_ptr<KernelEvtThr> kernel_event_ptr_;
 
 	//buffer for tcp socket
 	auth_message auth_message_;

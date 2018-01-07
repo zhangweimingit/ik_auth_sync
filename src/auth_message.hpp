@@ -61,9 +61,9 @@ struct auth_info
 //Challenge Handshake Authentication Protocol
 struct chap
 {
-	uint32_t gid_;
+	uint32_t gid_; //Clients report their group ID
 	uint32_t res1_;// reserve
-	std::string chap_str_;
+	std::string chap_str_;//Encrypting data by MD5 algorithm
 
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -81,8 +81,8 @@ public:
 	void set_header(Msg_Type msg);//The head must be set before sending
 	void parse_header();//Parsing the header information received from the server
 	
-	void constuct_check_client_res_msg();//Return the authentication information to the server
-	void parse_check_client_req_msg();//Verify the validity of the client
+	void constuct_check_client_res_msg();//Return the check client msg to the server
+	void parse_check_client_req_msg();
 
 	void constuct_auth_res_msg(const auth_info& auth);//Sending the auth information to the server
 	void parse_auth_res_msg(auth_info& auth); //Parsing auth information received from the server

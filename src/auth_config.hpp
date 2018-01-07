@@ -8,13 +8,13 @@ struct auth_config
 {
 	bool parse(std::string &config_file);
 
-	std::string host_;
-	std::string port_;
+	std::string host_;//server host
+	std::string port_;//server port
 
-	std::string server_pwd_;
+	std::string server_pwd_;//The cipher of the MD5 algorithm
 
-	uint32_t gid;
-	uint32_t expired_time; /*sec*/
+	uint32_t gid;//Authentication group ID
+	uint32_t duration_; /*sec*/
 };
 
 #endif

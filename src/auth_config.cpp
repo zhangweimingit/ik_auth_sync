@@ -23,7 +23,7 @@ bool auth_config::parse(string &config_file)
 			port_ = root.get<string>("port");
 			server_pwd_ = root.get<string>("server_pwd");
 			gid = root.get<uint32_t>("gid");
-			expired_time = root.get<uint32_t>("auth_expired_time");
+			duration_ = root.get<uint32_t>("auth_expired_time");
 		}
 		else
 		{
