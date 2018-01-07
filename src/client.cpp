@@ -54,7 +54,6 @@ void client::operator()(boost::system::error_code ec, std::size_t n)
 			auth_message_.parse_check_client_req_msg();
 			auth_message_.constuct_check_client_res_msg();
 			yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
-			std::cout << "wo hui lai le" << std::endl;
 			break;
 		case AUTH_RESPONSE:
 		{
