@@ -72,8 +72,6 @@ void client::start2(const error_code& ec)
 		//execute coroutine
 		(*this)();
 
-		//Auth information can be read only when TCP is connected
-		do_read_auth_pipe();
 	}
 	else
 	{
@@ -104,6 +102,7 @@ void client::operator()(error_code ec, std::size_t n)
 			auth_message_.parse_check_client_req_msg();
 			auth_message_.constuct_check_client_res_msg();
 			yield async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
+			do_read_auth_pipe();//Auth information can be read only when server is authed
 		}
 		else if (auth_message_.header_.type_ == AUTH_RESPONSE)
 		{
