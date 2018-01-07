@@ -81,7 +81,7 @@ public:
 	void set_header(Msg_Type msg);//The head must be set before sending
 	void parse_header();//Parsing the header information received from the server
 	
-	void constuct_check_client_res_msg();//Verify the validity of the client
+	void constuct_check_client_res_msg();//Return the authentication information to the server
 	void parse_check_client_req_msg();//Verify the validity of the client
 
 	void constuct_auth_res_msg(const auth_info& auth);//Sending the auth information to the server

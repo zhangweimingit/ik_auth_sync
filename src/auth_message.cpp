@@ -25,7 +25,7 @@ void auth_message::set_header(Msg_Type type)
 	header_.res2_ = 0;
 }
 
-//Parsing the header information received from the client
+//Parsing the header information received from the server
 void auth_message::parse_header()
 {
 	header_.len_  = network_to_host_short(header_.len_);
@@ -44,7 +44,7 @@ void auth_message::parse_header()
 	recv_body_.resize(header_.len_);//Adjust the size, be ready to accept the message body
 }
 
-//Verify the validity of the client
+//Return the authentication information to the server
 void auth_message::constuct_check_client_res_msg()
 {
 	std::ostringstream os;
