@@ -79,7 +79,7 @@ int main(int argc, const char **argv)
 		try
 		{
 			timer.expires_from_now(std::chrono::seconds(3));
-			timer.async_wait(std::bind(&client::start2,&timer,_1));
+			timer.async_wait(std::bind(&client::start2,&client,_1));
 			io_service.run();
 			break;
 		}
