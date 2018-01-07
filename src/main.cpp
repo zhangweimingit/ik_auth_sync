@@ -75,17 +75,17 @@ int main(int argc, const char **argv)
 
 	KernelEvtThr evt_thr(newhost_pipe[1], newauth_pipe[1]);
 
-	//if (!evt_thr.init()) 
-	//{
-	//	cerr << "Fail to init event thr" << endl;
-	//	exit(1);
-	//}
+	if (!evt_thr.init()) 
+	{
+		cerr << "Fail to init event thr" << endl;
+		exit(1);
+	}
 
-	//if (!evt_thr.start()) 
-	//{
-	//	cerr << "Fail to start event thr" << endl;
-	//	exit(1);
-	//}
+	if (!evt_thr.start()) 
+	{
+		cerr << "Fail to start event thr" << endl;
+		exit(1);
+	}
 
 	
 	CapacityQueue<kernel_info> auth_queue(sync_config.na_queue_size);

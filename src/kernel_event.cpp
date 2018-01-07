@@ -12,9 +12,9 @@
 #include <iostream>
 #include <string>
 
-#include <lib_event.h>
-#include <ik_types.h>
-#include <ik_def.h>
+//#include <lib_event.h>
+//#include <ik_types.h>
+//#include <ik_def.h>
 #include <thread>
 #include "kernel_event.hpp"
 
@@ -28,10 +28,10 @@ bool KernelEvtThr::init(void)
 {
 	int ret = 0;
 
-	ret += ik_register_event_callback(IK_NOTIFY_MODULE_STATS, IK_STATS_NEW_IP,
-			receive_new_host_event, this);
-	ret += ik_register_event_callback(IK_NOTIFY_MODULE_AUTH, IK_AUTH_NEW_AUTH,
-			receive_new_auth_event, this);
+	//ret += ik_register_event_callback(IK_NOTIFY_MODULE_STATS, IK_STATS_NEW_IP,
+	//		receive_new_host_event, this);
+	//ret += ik_register_event_callback(IK_NOTIFY_MODULE_AUTH, IK_AUTH_NEW_AUTH,
+	//		receive_new_auth_event, this);
 
 	
 	return ret == 0 && create_netlink_sock();
@@ -47,7 +47,18 @@ bool KernelEvtThr::start(void)
 void KernelEvtThr::start_work()
 {
 	cout << "Ready to receive kernel event" << endl;
-	ik_event_loop();
+
+	kernel_info info;
+	memcpy(info.mac_, "aa:bb:cc:ee:dd::ff", mac_str_len);
+	info.mac_[mac_str_len] = '\0';
+	receive_new_host(info);
+	sleep(3);
+
+
+	memcpy(info.mac_, "11:bb:cc:ee:dd::ff", mac_str_len);
+	info.mac_[mac_str_len] = '\0';
+	receive_new_auth(info);
+	//ik_event_loop();
 }
 
 void KernelEvtThr::receive_new_host(const kernel_info &info)
@@ -133,38 +144,38 @@ static void receive_new_auth_event(int module, int event, unsigned char *data, u
 }
 bool KernelEvtThr::create_netlink_sock(void)
 {
-	struct sockaddr_nl saddr;
-	int buf_len;
+	//struct sockaddr_nl saddr;
+	//int buf_len;
 
-	netlink_fd_ = socket(PF_NETLINK, SOCK_RAW, IK_NETLINK_CTL);
-	if (netlink_fd_ < 0) {
-		cerr << "Fail to create netlink socket: " << strerror(errno) << endl;
-		return false;
-	}
+	//netlink_fd_ = socket(PF_NETLINK, SOCK_RAW, IK_NETLINK_CTL);
+	//if (netlink_fd_ < 0) {
+	//	cerr << "Fail to create netlink socket: " << strerror(errno) << endl;
+	//	return false;
+	//}
 
-	memset(&saddr, 0, sizeof(saddr));
-	saddr.nl_family = AF_NETLINK;
-	saddr.nl_pid = getpid();  /* self pid */
-	saddr.nl_groups = 0;  /* not in mcast groups */
-	if (::bind(netlink_fd_, (struct sockaddr*)&saddr, sizeof(saddr))<0) {
-		cerr << "Fail to bind netlink socket: " << strerror(errno) << endl;
-		return false;
-	}
+	//memset(&saddr, 0, sizeof(saddr));
+	//saddr.nl_family = AF_NETLINK;
+	//saddr.nl_pid = getpid();  /* self pid */
+	//saddr.nl_groups = 0;  /* not in mcast groups */
+	//if (::bind(netlink_fd_, (struct sockaddr*)&saddr, sizeof(saddr))<0) {
+	//	cerr << "Fail to bind netlink socket: " << strerror(errno) << endl;
+	//	return false;
+	//}
 
 
-	buf_len = 2048 > sizeof(struct ik_cntl_msg) ? : sizeof(struct ik_cntl_msg);
-	if (setsockopt(netlink_fd_, SOL_SOCKET, SO_SNDBUFFORCE, &buf_len, sizeof(buf_len)) < 0 &&
-		setsockopt(netlink_fd_, SOL_SOCKET, SO_SNDBUF, &buf_len, sizeof(buf_len)) < 0) {
-		cerr << "Fail to set send buffer: " << strerror(errno) << endl;
-		return false;
-	}
+	//buf_len = 2048 > sizeof(struct ik_cntl_msg) ? : sizeof(struct ik_cntl_msg);
+	//if (setsockopt(netlink_fd_, SOL_SOCKET, SO_SNDBUFFORCE, &buf_len, sizeof(buf_len)) < 0 &&
+	//	setsockopt(netlink_fd_, SOL_SOCKET, SO_SNDBUF, &buf_len, sizeof(buf_len)) < 0) {
+	//	cerr << "Fail to set send buffer: " << strerror(errno) << endl;
+	//	return false;
+	//}
 
-	buf_len = 2048;
-	if (setsockopt(netlink_fd_, SOL_SOCKET, SO_RCVBUFFORCE, &buf_len, sizeof(buf_len)) < 0 &&
-		setsockopt(netlink_fd_, SOL_SOCKET, SO_RCVBUF, &buf_len, sizeof(buf_len)) < 0) {
-		cerr << "Fail to set recv buffer: " << strerror(errno) << endl;
-		return false;
-	}
+	//buf_len = 2048;
+	//if (setsockopt(netlink_fd_, SOL_SOCKET, SO_RCVBUFFORCE, &buf_len, sizeof(buf_len)) < 0 &&
+	//	setsockopt(netlink_fd_, SOL_SOCKET, SO_RCVBUF, &buf_len, sizeof(buf_len)) < 0) {
+	//	cerr << "Fail to set recv buffer: " << strerror(errno) << endl;
+	//	return false;
+	//}
 
 	return true;
 }
@@ -172,61 +183,61 @@ bool KernelEvtThr::create_netlink_sock(void)
 /*
 Copy the codes from ik_cntl
 */
-void KernelEvtThr::send_auth_to_kernel(const kernel_info &info)
-{
-	struct ik_cntl_msg ctl_msg;
-
-	memset(&ctl_msg, 0, sizeof(ctl_msg));
-
-	int v;
-	for (uint32_t i = 0; i < 6; i++) {
-		sscanf(info.mac_ + 3 * i, "%2x", &v);
-		ctl_msg.auth_config.mac[i] = (char)v;
-	}
-
-	ctl_msg.msg_type = IK_CNTL_AUTH_MSG;
-	ctl_msg.auth_config.msg_type = AUTH_ADD_MAC;
-	ctl_msg.auth_config.auth = 1;
-	ctl_msg.auth_config.attr_value = auth.attr_;
-	ctl_msg.auth_config.is_remote_auth = 1;
-
-	// send to kernel
-	struct sockaddr_nl daddr;
-	struct msghdr msg;
-	struct nlmsghdr *nlh;
-	struct iovec iov;
-
-	memset(&msg, 0, sizeof(msg));
-	memset(&daddr, 0, sizeof(daddr));
-	daddr.nl_family = AF_NETLINK;
-	daddr.nl_pid = 0;   /* For Linux Kernel */
-	daddr.nl_groups = 0; /* unicast */
-
-	nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(sizeof(ctl_msg)));
-	if (!nlh) {
-		cerr << "Fail to malloc nhl" << endl;
-		return;
-	}
-	/* Fill the netlink message header */
-	nlh->nlmsg_len = NLMSG_LENGTH(sizeof(ctl_msg));
-	nlh->nlmsg_pid = getpid();  /* self pid */
-	nlh->nlmsg_flags = 0;
-	/* Fill in the netlink message payload */
-	memcpy(NLMSG_DATA(nlh), &ctl_msg, sizeof(ctl_msg));
-
-	iov.iov_base = (void *)nlh;
-	iov.iov_len = nlh->nlmsg_len;
-	msg.msg_name = (void *)&daddr;
-	msg.msg_namelen = sizeof(daddr);
-	msg.msg_iov = &iov;
-	msg.msg_iovlen = 1;
-
-	cout << "Send auth msg to kernel" << endl;
-	if (sendmsg(netlink_fd_, &msg, 0) == -1) {
-		cerr << "sendmsg failed: " << strerror(errno) << endl;
-	}
-	free(nlh);
-}
+//void KernelEvtThr::send_auth_to_kernel(const kernel_info &info)
+//{
+//	struct ik_cntl_msg ctl_msg;
+//
+//	memset(&ctl_msg, 0, sizeof(ctl_msg));
+//
+//	int v;
+//	for (uint32_t i = 0; i < 6; i++) {
+//		sscanf(info.mac_ + 3 * i, "%2x", &v);
+//		ctl_msg.auth_config.mac[i] = (char)v;
+//	}
+//
+//	ctl_msg.msg_type = IK_CNTL_AUTH_MSG;
+//	ctl_msg.auth_config.msg_type = AUTH_ADD_MAC;
+//	ctl_msg.auth_config.auth = 1;
+//	ctl_msg.auth_config.attr_value = auth.attr_;
+//	ctl_msg.auth_config.is_remote_auth = 1;
+//
+//	// send to kernel
+//	struct sockaddr_nl daddr;
+//	struct msghdr msg;
+//	struct nlmsghdr *nlh;
+//	struct iovec iov;
+//
+//	memset(&msg, 0, sizeof(msg));
+//	memset(&daddr, 0, sizeof(daddr));
+//	daddr.nl_family = AF_NETLINK;
+//	daddr.nl_pid = 0;   /* For Linux Kernel */
+//	daddr.nl_groups = 0; /* unicast */
+//
+//	nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(sizeof(ctl_msg)));
+//	if (!nlh) {
+//		cerr << "Fail to malloc nhl" << endl;
+//		return;
+//	}
+//	/* Fill the netlink message header */
+//	nlh->nlmsg_len = NLMSG_LENGTH(sizeof(ctl_msg));
+//	nlh->nlmsg_pid = getpid();  /* self pid */
+//	nlh->nlmsg_flags = 0;
+//	/* Fill in the netlink message payload */
+//	memcpy(NLMSG_DATA(nlh), &ctl_msg, sizeof(ctl_msg));
+//
+//	iov.iov_base = (void *)nlh;
+//	iov.iov_len = nlh->nlmsg_len;
+//	msg.msg_name = (void *)&daddr;
+//	msg.msg_namelen = sizeof(daddr);
+//	msg.msg_iov = &iov;
+//	msg.msg_iovlen = 1;
+//
+//	cout << "Send auth msg to kernel" << endl;
+//	if (sendmsg(netlink_fd_, &msg, 0) == -1) {
+//		cerr << "sendmsg failed: " << strerror(errno) << endl;
+//	}
+//	free(nlh);
+//}
 
 
 
