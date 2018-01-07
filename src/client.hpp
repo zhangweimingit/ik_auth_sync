@@ -2,7 +2,6 @@
 #define CLIENT_HPP
 
 #include "auth_message.hpp"
-#include "capacity_queue.hpp"
 #include "kernel_event.hpp"
 #include <boost/asio.hpp>
 #include <string>
