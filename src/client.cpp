@@ -42,6 +42,11 @@ void client::start2()
 	coroutine_ = boost::asio::coroutine();
 	(*this)();
 }
+void client::close()
+{
+	boost::system::error_code ignore_error;
+	socket_.close(ignore_error);
+}
 void client::operator()(boost::system::error_code ec, std::size_t n)
 {
 	if (!ec) reenter(coroutine_) for (;;)

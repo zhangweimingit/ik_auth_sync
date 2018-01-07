@@ -106,6 +106,7 @@ int main(int argc, const char **argv)
 		}
 		catch (const std::exception&e)
 		{
+			client.close();
 			std::cout << "server close because of " << e.what() << std::endl;
 		}
 

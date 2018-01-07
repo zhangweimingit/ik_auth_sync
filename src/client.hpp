@@ -19,7 +19,7 @@ public:
 
 	void start1();
 	void start2();
-
+	void close();
 	void operator()(boost::system::error_code ec = boost::system::error_code(), std::size_t n = 0);
 
 private:
