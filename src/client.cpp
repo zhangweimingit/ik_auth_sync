@@ -38,9 +38,9 @@ void client::start2()
 	tcp::resolver::iterator iterator = resolver.resolve(query);
 	boost::asio::connect(socket_, iterator);
 
-	do_read_auth_pipe();
 	coroutine_ = boost::asio::coroutine();
 	(*this)();
+	do_read_auth_pipe();
 }
 void client::close()
 {
