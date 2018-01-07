@@ -46,7 +46,7 @@ void client::operator()(boost::system::error_code ec, std::size_t n)
 
 	if (!ec) reenter(this) for (;;)
 	{
-
+		std::cout << "AUTH_RESPONSE" << std::endl;
 		yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.header_buffer_),std::ref(*this));
 		auth_message_.parse_header();
 		yield boost::asio::async_read(socket_, boost::asio::buffer(auth_message_.recv_body_), std::ref(*this));
@@ -58,7 +58,6 @@ void client::operator()(boost::system::error_code ec, std::size_t n)
 			yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
 			break;
 		case AUTH_RESPONSE:
-			std::cout << "AUTH_RESPONSE" << std::endl;
 			auth_message_.parse_auth_res_msg(auth);
 			auth.auth_time_ = time(0);
 			mac_auth_[auth.mac_] = auth;
