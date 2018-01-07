@@ -188,61 +188,61 @@ bool KernelEvtThr::create_netlink_sock(void)
 /*
 Copy the codes from ik_cntl
 */
-//void KernelEvtThr::send_auth_to_kernel(const kernel_info &info)
-//{
-//	struct ik_cntl_msg ctl_msg;
-//
-//	memset(&ctl_msg, 0, sizeof(ctl_msg));
-//
-//	int v;
-//	for (uint32_t i = 0; i < 6; i++) {
-//		sscanf(info.mac_ + 3 * i, "%2x", &v);
-//		ctl_msg.auth_config.mac[i] = (char)v;
-//	}
-//
-//	ctl_msg.msg_type = IK_CNTL_AUTH_MSG;
-//	ctl_msg.auth_config.msg_type = AUTH_ADD_MAC;
-//	ctl_msg.auth_config.auth = 1;
-//	ctl_msg.auth_config.attr_value = auth.attr_;
-//	ctl_msg.auth_config.is_remote_auth = 1;
-//
-//	// send to kernel
-//	struct sockaddr_nl daddr;
-//	struct msghdr msg;
-//	struct nlmsghdr *nlh;
-//	struct iovec iov;
-//
-//	memset(&msg, 0, sizeof(msg));
-//	memset(&daddr, 0, sizeof(daddr));
-//	daddr.nl_family = AF_NETLINK;
-//	daddr.nl_pid = 0;   /* For Linux Kernel */
-//	daddr.nl_groups = 0; /* unicast */
-//
-//	nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(sizeof(ctl_msg)));
-//	if (!nlh) {
-//		cerr << "Fail to malloc nhl" << endl;
-//		return;
-//	}
-//	/* Fill the netlink message header */
-//	nlh->nlmsg_len = NLMSG_LENGTH(sizeof(ctl_msg));
-//	nlh->nlmsg_pid = getpid();  /* self pid */
-//	nlh->nlmsg_flags = 0;
-//	/* Fill in the netlink message payload */
-//	memcpy(NLMSG_DATA(nlh), &ctl_msg, sizeof(ctl_msg));
-//
-//	iov.iov_base = (void *)nlh;
-//	iov.iov_len = nlh->nlmsg_len;
-//	msg.msg_name = (void *)&daddr;
-//	msg.msg_namelen = sizeof(daddr);
-//	msg.msg_iov = &iov;
-//	msg.msg_iovlen = 1;
-//
-//	cout << "Send auth msg to kernel" << endl;
-//	if (sendmsg(netlink_fd_, &msg, 0) == -1) {
-//		cerr << "sendmsg failed: " << strerror(errno) << endl;
-//	}
-//	free(nlh);
-//}
+void KernelEvtThr::send_auth_to_kernel(const kernel_info &info)
+{
+	//struct ik_cntl_msg ctl_msg;
+
+	//memset(&ctl_msg, 0, sizeof(ctl_msg));
+
+	//int v;
+	//for (uint32_t i = 0; i < 6; i++) {
+	//	sscanf(info.mac_ + 3 * i, "%2x", &v);
+	//	ctl_msg.auth_config.mac[i] = (char)v;
+	//}
+
+	//ctl_msg.msg_type = IK_CNTL_AUTH_MSG;
+	//ctl_msg.auth_config.msg_type = AUTH_ADD_MAC;
+	//ctl_msg.auth_config.auth = 1;
+	//ctl_msg.auth_config.attr_value = auth.attr_;
+	//ctl_msg.auth_config.is_remote_auth = 1;
+
+	//// send to kernel
+	//struct sockaddr_nl daddr;
+	//struct msghdr msg;
+	//struct nlmsghdr *nlh;
+	//struct iovec iov;
+
+	//memset(&msg, 0, sizeof(msg));
+	//memset(&daddr, 0, sizeof(daddr));
+	//daddr.nl_family = AF_NETLINK;
+	//daddr.nl_pid = 0;   /* For Linux Kernel */
+	//daddr.nl_groups = 0; /* unicast */
+
+	//nlh = (struct nlmsghdr *)malloc(NLMSG_SPACE(sizeof(ctl_msg)));
+	//if (!nlh) {
+	//	cerr << "Fail to malloc nhl" << endl;
+	//	return;
+	//}
+	///* Fill the netlink message header */
+	//nlh->nlmsg_len = NLMSG_LENGTH(sizeof(ctl_msg));
+	//nlh->nlmsg_pid = getpid();  /* self pid */
+	//nlh->nlmsg_flags = 0;
+	///* Fill in the netlink message payload */
+	//memcpy(NLMSG_DATA(nlh), &ctl_msg, sizeof(ctl_msg));
+
+	//iov.iov_base = (void *)nlh;
+	//iov.iov_len = nlh->nlmsg_len;
+	//msg.msg_name = (void *)&daddr;
+	//msg.msg_namelen = sizeof(daddr);
+	//msg.msg_iov = &iov;
+	//msg.msg_iovlen = 1;
+
+	//cout << "Send auth msg to kernel" << endl;
+	//if (sendmsg(netlink_fd_, &msg, 0) == -1) {
+	//	cerr << "sendmsg failed: " << strerror(errno) << endl;
+	//}
+	//free(nlh);
+}
 
 
 
