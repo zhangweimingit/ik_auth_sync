@@ -48,22 +48,6 @@ bool KernelEvtThr::start(void)
 void KernelEvtThr::start_work()
 {
 	cout << "Ready to receive kernel event" << endl;
-
-	while (true)
-	{
-		kernel_info info;
-		memcpy(info.mac_, "aa:bb:cc:ee:dd:ff", mac_str_len);
-		info.mac_[mac_str_len] = '\0';
-		receive_new_host(info);
-		sleep(3);
-
-
-		memcpy(info.mac_, "aa:bb:cc:ee:dd:ff", mac_str_len);
-		info.mac_[mac_str_len] = '\0';
-		receive_new_auth(info);
-		sleep(3);
-	}
-
 	//ik_event_loop();
 }
 
@@ -72,10 +56,12 @@ void KernelEvtThr::receive_new_host(const kernel_info &info)
 	cout << "KernelEvtThr: receive new host " << info.mac_ << endl;
 
 	auto size = write(newhost_pipe_, &info, sizeof(kernel_info));
+
 	if (size == sizeof(kernel_info)) 
 	{
 		cout << "KernelEvtThr: write one new host to pipe" << endl;
-	} else 
+	} 
+	else 
 	{
 		cerr << "KernelEvtHtr: fail to write new host to pipe" << endl;
 	}
@@ -86,13 +72,16 @@ void KernelEvtThr::receive_new_auth(const kernel_info &info)
 	cout << "KernelEvtThr: receive new auth " << info.mac_ << endl; 
 
 	auto size = write(newauth_pipe_, &info, sizeof(kernel_info));
+
 	if (size == sizeof(kernel_info))
 	{
 		cout << "KernelEvtThr: write one new auth to pipe" << endl;
-	} else 
+	}
+	else 
 	{
 		cerr << "KernelEvtHtr: fail to write new auth to pipe" << endl;
-	}}
+	}
+}
 
 /*
 event:192.168.10.2 00:50:56:c0:00:08 2017-11-23 17:46:23
@@ -117,7 +106,7 @@ event:192.168.10.2 00:50:56:c0:00:08 2017-11-23 17:46:23
 //}
 //
 ///*
-//event:12:34:56:78:90:ab attr(1,2,3) local/remote
+//event:12:34:56:78:90:ab attr(1,2,3) duration local/remote
 //*/
 //static void receive_new_auth_event(int module, int event, unsigned char *data, unsigned int length, void* self_data)
 //{
