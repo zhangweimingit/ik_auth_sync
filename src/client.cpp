@@ -13,10 +13,9 @@ using boost::asio::async_read;
 using boost::asio::async_write;
 
 //Constructor
-client::client(io_service& io_service, tcp::resolver::iterator iterator, const string&dhcp_path)
+client::client(io_service& io_service, tcp::resolver::iterator iterator)
 	: iterator_(iterator),
-	socket_(io_service),
-	dhcp_sock_(io_service, dhcp_path)
+	socket_(io_service)
 {
 }
 
@@ -49,6 +48,12 @@ void client::start1()
 		std::cerr << "Fail to start event thr" << std::endl;
 		exit(1);
 	}
+
+	host_pipe_ = std::make_shared<stream_descriptor>(socket_.get_io_service(), newhost_pipe[0]);
+	auth_pipe_ = std::make_shared<stream_descriptor>(socket_.get_io_service(), newauth_pipe[0]);
+	
+	std::remove("/tmp/dhcp_option_info_auth");
+	dhcp_sock_ = std::make_shared<datagram_protocol::socket>(socket_.get_io_service(), "/tmp/dhcp_option_info_auth");
 
 	do_read_host_pipe();
 	do_read_dhcp();
@@ -108,7 +113,7 @@ void client::operator()(error_code ec, std::size_t n)
 
 void client::do_read_host_pipe()
 {
-	async_read(host_pipe_, boost::asio::buffer(host_buffer_), 
+	async_read(*host_pipe_, boost::asio::buffer(host_buffer_), 
 		std::bind(&client::handle_host_pipe, this, _1, _2));
 }
 
@@ -129,7 +134,7 @@ void client::handle_host_pipe(const error_code&ec, std::size_t)
 
 void client::do_read_auth_pipe()
 {
-	async_read(auth_pipe_, boost::asio::buffer(auth_buffer_),
+	async_read(*auth_pipe_, boost::asio::buffer(auth_buffer_),
 		std::bind(&client::handle_read_auth_pipe, this, _1, _2));
 }
 
@@ -161,7 +166,7 @@ void client::handle_read_auth_pipe(const error_code&ec, std::size_t)
 
 void client::do_read_dhcp()
 {
-	dhcp_sock_.async_receive(boost::asio::buffer(dhcp_buffer_),
+	dhcp_sock_->async_receive(boost::asio::buffer(dhcp_buffer_),
 		std::bind(&client::handle_read_dhcp, this, _1, _2));
 }
 

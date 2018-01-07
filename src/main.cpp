@@ -68,8 +68,7 @@ int main(int argc, const char **argv)
 	tcp::resolver::query query(sync_config.host_, sync_config.port_);
 	tcp::resolver::iterator iterator = resolver.resolve(query);
 
-	std::remove("/tmp/dhcp_option_info_auth");
-	client client(io_service, iterator,"/tmp/dhcp_option_info_auth");
+	client client(io_service, iterator);
 
 	client.start1();
 
