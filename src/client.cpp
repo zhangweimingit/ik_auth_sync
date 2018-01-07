@@ -110,7 +110,7 @@ void client::operator()(error_code ec, std::size_t n)
 			auth_message_.parse_auth_res_msg(auth);
 			mac_auth_[auth.mac_] = auth; 
 			std::cout << "recv auth from server mac is " << auth.mac_ << " attr is " << auth.attr_
-				<< "duration is " << auth.duration_ << std::endl;
+				<< " duration is " << auth.duration_ << std::endl;
 		}
 	}
 	else
