@@ -6,10 +6,12 @@
 #include <vector>
 #include <map>
 #include <boost/program_options.hpp>
+#include <boost/asio/system_timer.hpp>
 #include "auth_config.hpp"
 #include "kernel_event.hpp"
 #include "auth_message.hpp"
 #include "client.hpp"
+
 using namespace std;
 namespace po = boost::program_options;
 using boost::serialization::singleton;
@@ -44,6 +46,7 @@ int main(int argc, const char **argv)
 
 	auto config_file_name = vm["config"].as<string>();
 	auth_config& sync_config = singleton<auth_config>::get_mutable_instance();
+
 	if (!sync_config.parse(config_file_name)) 
 	{
 		cerr << "parse_config_file failed" << endl;
@@ -60,10 +63,9 @@ int main(int argc, const char **argv)
 		}
 	}
 
-
-
 	boost::asio::io_service io_service;
 	boost::asio::io_service::work work(io_service);
+	boost::asio::system_timer timer(io_service);
 	tcp::resolver resolver(io_service);
 	tcp::resolver::query query(sync_config.host_, sync_config.port_);
 	tcp::resolver::iterator iterator = resolver.resolve(query);
@@ -76,9 +78,8 @@ int main(int argc, const char **argv)
 	{
 		try
 		{
-			client.start2();
-
-			std::cout << "success to connect server!" << std::endl;
+			timer.expires_from_now(std::chrono::seconds(3));
+			timer.async_wait(std::bind(&client::start2,&timer));
 			io_service.run();
 			break;
 		}
@@ -88,7 +89,6 @@ int main(int argc, const char **argv)
 			std::cout << "server close because of " << e.what() << std::endl;
 		}
 
-		sleep(3);
 		std::cout << "try to connect server.... " <<  std::endl;
 	}
 

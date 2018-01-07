@@ -61,6 +61,8 @@ void client::start1()
 
 void client::start2()
 {
+	std::cout << "success to connect server!" << std::endl;
+
 	boost::asio::connect(socket_, iterator_);
 
 	//must init
