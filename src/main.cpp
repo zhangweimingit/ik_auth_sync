@@ -93,13 +93,7 @@ int main(int argc, const char **argv)
 		std::cout << "try to connect server.... " <<  std::endl;
 	}
 
-	close(newhost_pipe[0]);
-	close(newhost_pipe[1]);
-	close(newauth_pipe[0]);
-	close(newauth_pipe[1]);
-
 	cout << "ik_as_client exit" << endl;
-	
 	return 0;
 }
 
