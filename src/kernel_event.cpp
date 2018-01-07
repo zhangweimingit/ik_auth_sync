@@ -58,7 +58,7 @@ void KernelEvtThr::start_work()
 		sleep(3);
 
 
-		memcpy(info.mac_, "11:bb:cc:ee:dd:ff", mac_str_len);
+		memcpy(info.mac_, "aa:bb:cc:ee:dd:ff", mac_str_len);
 		info.mac_[mac_str_len] = '\0';
 		receive_new_auth(info);
 	}
