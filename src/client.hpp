@@ -20,7 +20,7 @@ public:
 	client(io_service& io_service, tcp::resolver::iterator iterator);
 
 	void start1();//Read host information from pipes and DHCP
-	void start2();//Read auth information from pipes and send to server
+	void start2(const error_code& ec);//Read auth information from pipes and send to server
 	void close();//close tcp socket
 
 	//main loop

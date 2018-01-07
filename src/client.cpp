@@ -59,20 +59,27 @@ void client::start1()
 	do_read_dhcp();
 }
 
-void client::start2()
+void client::start2(const error_code& ec)
 {
-	std::cout << "success to connect server!" << std::endl;
+	if (!ec)
+	{
+		boost::asio::connect(socket_, iterator_);
 
-	boost::asio::connect(socket_, iterator_);
+		std::cout << "success to connect server!" << std::endl;
+		//must init
+		coroutine_ = boost::asio::coroutine();
 
-	//must init
-	coroutine_ = boost::asio::coroutine();
+		//execute coroutine
+		(*this)();
 
-	//execute coroutine
-	(*this)();
+		//Auth information can be read only when TCP is connected
+		do_read_auth_pipe();
+	}
+	else
+	{
+		throw boost::system::system_error(ec);
+	}
 
-	//Auth information can be read only when TCP is connected
-	do_read_auth_pipe();
 }
 
 void client::close()

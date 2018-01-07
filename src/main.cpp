@@ -15,7 +15,7 @@
 using namespace std;
 namespace po = boost::program_options;
 using boost::serialization::singleton;
-
+using std::placeholders::_1;
 /***********************************************************************/
 int main(int argc, const char **argv)
 {
@@ -79,7 +79,7 @@ int main(int argc, const char **argv)
 		try
 		{
 			timer.expires_from_now(std::chrono::seconds(3));
-			timer.async_wait(std::bind(&client::start2,&timer));
+			timer.async_wait(std::bind(&client::start2,&timer,_1));
 			io_service.run();
 			break;
 		}
