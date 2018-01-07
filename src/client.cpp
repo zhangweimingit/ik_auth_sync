@@ -58,6 +58,7 @@ void client::operator()(boost::system::error_code ec, std::size_t n)
 			yield boost::asio::async_write(socket_, auth_message_.send_buffers_, std::ref(*this));
 			break;
 		case AUTH_RESPONSE:
+			std::cout << "AUTH_RESPONSE" << std::endl;
 			auth_message_.parse_auth_res_msg(auth);
 			auth.auth_time_ = time(0);
 			mac_auth_[auth.mac_] = auth;
