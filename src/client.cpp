@@ -82,7 +82,7 @@ void client::handle_host_pipe(const boost::system::error_code&ec, std::size_t)
 {
 	if (!ec)
 	{
-		std::cout << "client recv host from kernel" << kernel_host_info_.mac_ << std::endl;
+		std::cout << "client recv host from kernel " << kernel_host_info_.mac_ << std::endl;
 		if (mac_auth_.count(kernel_host_info_.mac_))
 		{
 			auto & auth = mac_auth_[kernel_host_info_.mac_];
@@ -128,7 +128,7 @@ void client::handle_read_auth_pipe(const boost::system::error_code&ec, std::size
 			info.attr_ = kernel_auth_info_.attr_;
 			info.duration_ = sync_config.expired_time;
 			auth_message_.constuct_auth_res_msg(info);
-			boost::asio::async_write(socket_, boost::asio::buffer(auth_message_.send_buffers_),
+			boost::asio::async_write(socket_, auth_message_.send_buffers_,
 				[](const boost::system::error_code&ec, size_t bytes_transfered) {});
 			do_read_auth_pipe();
 		}
