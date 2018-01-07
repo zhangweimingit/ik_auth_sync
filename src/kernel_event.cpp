@@ -92,57 +92,57 @@ void KernelEvtThr::receive_new_auth(const kernel_info &info)
 /*
 event:192.168.10.2 00:50:56:c0:00:08 2017-11-23 17:46:23
 */
-static void receive_new_host_event(int module, int event, unsigned char *data, unsigned int length, void* self_data)
-{
-	KernelEvtThr *kernel_evt = reinterpret_cast<KernelEvtThr *>(self_data);
-	string str(reinterpret_cast<char*>(data), length);
-	
-	cout << "Receive one new_host event: " << str << endl;
-
-	/* The event format is fixed, so don't check error */
-	string::size_type n;
-	n = str.find(' ');
-	n++;
-
-	kernel_info info;
-	memcpy(info.mac_, &str[n], mac_str_len);
-	info.mac_[mac_str_len] = '\0';
-
-	kernel_evt->receive_new_host(info);
-}
-
-/*
-event:12:34:56:78:90:ab attr(1,2,3) local/remote
-*/
-static void receive_new_auth_event(int module, int event, unsigned char *data, unsigned int length, void* self_data)
-{
-	KernelEvtThr *kernel_evt = reinterpret_cast<KernelEvtThr *>(self_data);
-	string str(reinterpret_cast<char*>(data), length);
-	kernel_info info;
-
-	cout << "Receive one new_auth event: " << str << endl;
-
-	/* The event format is fixed, so don't check errror */
-	memcpy(info.mac_, &str[0], mac_str_len);
-	info.mac_[mac_str_len] = '\0';
-
-	// attribute value
-	string::size_type n;
-	n = str.find(' ');
-	n++;
-	info.attr_ = atoi(&str[n]);
-
-	n = str.find(' ', n);
-	n++;
-	info.duration_ = atoi(&str[n]);
-
-	n = str.find(' ', n);
-	n++;
-	if (strcmp(&str[n], "local") == 0) 
-	{
-		kernel_evt->receive_new_auth(info);
-	}
-}
+//static void receive_new_host_event(int module, int event, unsigned char *data, unsigned int length, void* self_data)
+//{
+//	KernelEvtThr *kernel_evt = reinterpret_cast<KernelEvtThr *>(self_data);
+//	string str(reinterpret_cast<char*>(data), length);
+//	
+//	cout << "Receive one new_host event: " << str << endl;
+//
+//	/* The event format is fixed, so don't check error */
+//	string::size_type n;
+//	n = str.find(' ');
+//	n++;
+//
+//	kernel_info info;
+//	memcpy(info.mac_, &str[n], mac_str_len);
+//	info.mac_[mac_str_len] = '\0';
+//
+//	kernel_evt->receive_new_host(info);
+//}
+//
+///*
+//event:12:34:56:78:90:ab attr(1,2,3) local/remote
+//*/
+//static void receive_new_auth_event(int module, int event, unsigned char *data, unsigned int length, void* self_data)
+//{
+//	KernelEvtThr *kernel_evt = reinterpret_cast<KernelEvtThr *>(self_data);
+//	string str(reinterpret_cast<char*>(data), length);
+//	kernel_info info;
+//
+//	cout << "Receive one new_auth event: " << str << endl;
+//
+//	/* The event format is fixed, so don't check errror */
+//	memcpy(info.mac_, &str[0], mac_str_len);
+//	info.mac_[mac_str_len] = '\0';
+//
+//	// attribute value
+//	string::size_type n;
+//	n = str.find(' ');
+//	n++;
+//	info.attr_ = atoi(&str[n]);
+//
+//	n = str.find(' ', n);
+//	n++;
+//	info.duration_ = atoi(&str[n]);
+//
+//	n = str.find(' ', n);
+//	n++;
+//	if (strcmp(&str[n], "local") == 0) 
+//	{
+//		kernel_evt->receive_new_auth(info);
+//	}
+//}
 bool KernelEvtThr::create_netlink_sock(void)
 {
 	//struct sockaddr_nl saddr;
