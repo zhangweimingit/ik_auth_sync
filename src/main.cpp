@@ -1,5 +1,6 @@
 #include <unistd.h>
-
+#include <cstdio>
+#include <thread>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -13,11 +14,7 @@
 using namespace std;
 namespace po = boost::program_options;
 using boost::serialization::singleton;
-using boost::asio::ip::tcp;
-using boost::asio::local::datagram_protocol;
-using boost::asio::posix::stream_descriptor;
 
-std::map<std::string, auth_message> g_mac_auth;
 /***********************************************************************/
 int main(int argc, const char **argv)
 {
@@ -76,7 +73,7 @@ int main(int argc, const char **argv)
 		exit(1);
 	}
 
-	//KernelEvtThr evt_thr(newhost_pipe[1], newauth_pipe[1]);
+	KernelEvtThr evt_thr(newhost_pipe[1], newauth_pipe[1]);
 
 	//if (!evt_thr.init()) 
 	//{
@@ -96,21 +93,28 @@ int main(int argc, const char **argv)
 	boost::asio::io_service io_service;
 	boost::asio::io_service::work work(io_service);
 
-	::unlink("/tmp/dhcp_option_info_auth");
-	datagram_protocol::socket dhcp_sock(io_service,"/tmp/dhcp_option_info_auth");
-
-	stream_descriptor host_pipe(io_service, newhost_pipe[0]);
-	stream_descriptor auth_pipe(io_service, newauth_pipe[0]);
-
+	std::remove("/tmp/dhcp_option_info_auth");
+	client client(io_service, sync_config.host_, sync_config.port_,
+		newhost_pipe[0], newauth_pipe[0], "/tmp/dhcp_option_info_auth");
 
 	while (1) 
 	{
-		client client(io_service,sync_config.host_,sync_config.port_);
-		client();
-		io_service.run();
+		try
+		{
+
+			client.start2();
+
+			std::cout << "success to connect server!" << std::endl;
+			io_service.run();
+			break;
+		}
+		catch (const std::exception&e)
+		{
+			std::cout << "server close because of " << e.what() << std::endl;
+		}
 
 		sleep(3);
-		continue;
+		std::cout << "try to connect server.... " <<  std::endl;
 	}
 
 	close(newhost_pipe[0]);

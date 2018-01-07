@@ -104,5 +104,4 @@ void auth_message::parse_auth_res_msg(auth_info& auth)
 	std::istringstream is(string(recv_body_.begin(), recv_body_.end()));
 	boost::archive::binary_iarchive ia(is);
 	ia >> auth;
-	auth.auth_time_ = time(0);
 }
