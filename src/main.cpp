@@ -97,6 +97,7 @@ int main(int argc, const char **argv)
 	client client(io_service, sync_config.host_, sync_config.port_,
 		newhost_pipe[0], newauth_pipe[0], "/tmp/dhcp_option_info_auth", evt_thr);
 
+	client.start1();
 	while (1) 
 	{
 		try

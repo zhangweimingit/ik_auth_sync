@@ -69,6 +69,7 @@ void client::operator()(boost::system::error_code ec, std::size_t n)
 	else
 	{
 		socket_.close();
+		throw boost::system::system_error(ec);
 	}
 }
 void client::do_read_host_pipe()
