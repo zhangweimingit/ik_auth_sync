@@ -31,7 +31,7 @@ void auth_message::parse_header()
 	header_.len_  = network_to_host_short(header_.len_);
 	header_.res1_ = network_to_host_short(header_.res1_);
 	header_.res2_ = network_to_host_short(header_.res2_);
-	throw runtime_error("header invalid");
+
 	if (header_.version_ != 1 || header_.len_ == 0)
 	{
 		throw runtime_error("header invalid");
