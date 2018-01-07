@@ -82,6 +82,7 @@ void client::handle_host_pipe(const boost::system::error_code&ec, std::size_t)
 {
 	if (!ec)
 	{
+		std::cout << "client recv host from kernel" << kernel_host_info_.mac_ << std::endl;
 		if (mac_auth_.count(kernel_host_info_.mac_))
 		{
 			auto & auth = mac_auth_[kernel_host_info_.mac_];
@@ -91,10 +92,11 @@ void client::handle_host_pipe(const boost::system::error_code&ec, std::size_t)
 				memcpy(info.mac_, auth.mac_.c_str(),mac_str_len);
 				info.mac_[mac_str_len] = '\0';
 				info.attr_ = auth.attr_;
-				//kernel_event_.send_auth_to_kernel(info);
+				//kernel_event_.(info);
 				std::ostringstream output;
-				output << "/usr/ikuai/script/Action/webauth-up  remote_auth_sync mac=" << auth.mac_ << "  authtype=" << auth.attr_ << " timeout=" << auth.duration_ - (time(NULL) - auth.auth_time_);
+				output << "/usr/ikuai/ssend_auth_to_kernelcript/Action/webauth-up  remote_auth_sync mac=" << auth.mac_ << "  authtype=" << auth.attr_ << " timeout=" << auth.duration_ - (time(NULL) - auth.auth_time_);
 				system(output.str().c_str());
+				std::cout << "send auth to kernel " << kernel_host_info_.mac_ << std::endl;
 			}
 			else
 			{
@@ -118,6 +120,7 @@ void client::handle_read_auth_pipe(const boost::system::error_code&ec, std::size
 	auth_config& sync_config = singleton<auth_config>::get_mutable_instance();
 	if (!ec)
 	{
+		std::cout << "client recv auth from kernel " << kernel_auth_info_.mac_ << std::endl;
 		if (socket_.is_open())
 		{
 			auth_info info;
