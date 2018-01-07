@@ -21,8 +21,8 @@
 
 using namespace std;
 /********************************************************************************/
-static void receive_new_host_event(int module, int event, unsigned char *data, unsigned int length, void* self_data);
-static void receive_new_auth_event(int module, int event, unsigned char *data, unsigned int length, void* self_data);
+//static void receive_new_host_event(int module, int event, unsigned char *data, unsigned int length, void* self_data);
+//static void receive_new_auth_event(int module, int event, unsigned char *data, unsigned int length, void* self_data);
 /********************************************************************************/
 
 bool KernelEvtThr::init(void)
