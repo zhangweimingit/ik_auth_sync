@@ -8,6 +8,7 @@
 using namespace std;
 using boost::property_tree::ptree;
 using boost::property_tree::read_json;
+
 bool auth_config::parse(string &config_file)
 {
 	try
@@ -21,7 +22,6 @@ bool auth_config::parse(string &config_file)
 			host_ = root.get<string>("host");
 			port_ = root.get<string>("port");
 			server_pwd_ = root.get<string>("server_pwd");
-			na_queue_size = root.get<uint32_t>("auth_queue_size");
 			gid = root.get<uint32_t>("gid");
 			expired_time = root.get<uint32_t>("auth_expired_time");
 		}

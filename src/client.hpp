@@ -16,7 +16,7 @@ class client
 public:
 	client(boost::asio::io_service& io_service, const std::string& address, const std::string& port,
 	int host_pipe, int auth_pipe,const std::string& dhcp_path, 
-		KernelEvtThr& kernel_event, int na_queue_size);
+		KernelEvtThr& kernel_event);
 
 	void start1();
 	void start2();
@@ -55,7 +55,6 @@ private:
 	};
 
 	char dhcp_buffer_[128];
-	capacity_queue<kernel_info> auth_queue_;
 	boost::asio::coroutine coroutine_;
 };
 
