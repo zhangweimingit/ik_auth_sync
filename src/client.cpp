@@ -137,7 +137,7 @@ void client::handle_read_auth_pipe(const boost::system::error_code&ec, std::size
 }
 void client::do_read_dhcp()
 {
-	dhcp_sock_.async_read_some(boost::asio::buffer(dhcp_buffer_),
+	dhcp_sock_.async_receive(boost::asio::buffer(dhcp_buffer_),
 		std::bind(&client::handle_read_dhcp, this, _1, _2));
 }
 
