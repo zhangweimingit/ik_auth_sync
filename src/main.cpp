@@ -95,7 +95,7 @@ int main(int argc, const char **argv)
 
 	std::remove("/tmp/dhcp_option_info_auth");
 	client client(io_service, sync_config.host_, sync_config.port_,
-		newhost_pipe[0], newauth_pipe[0], "/tmp/dhcp_option_info_auth");
+		newhost_pipe[0], newauth_pipe[0], "/tmp/dhcp_option_info_auth", evt_thr);
 
 	while (1) 
 	{
