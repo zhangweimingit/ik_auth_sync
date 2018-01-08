@@ -79,15 +79,16 @@ void auth_message::parse_check_client_req_msg()
 	client_chap.res1_ = root.get<uint32_t>("res1_");
 	client_chap.chap_str_ = base16_to_string(root.get<string>("chap_str_"));
 
-	string comp = client_chap.chap_str_ + config.server_pwd_;
-
-	md5 md5;
-	uint8_t ret[16];
-
 	if (client_chap.chap_str_.size() != 32)
 	{
 		throw runtime_error("chap length error");
 	}
+
+	std::cout << client_chap.chap_str_ << std::endl;
+
+	md5 md5;
+	uint8_t ret[16];
+	string comp = client_chap.chap_str_ + config.server_pwd_;
 
 	md5.md5_once(const_cast<char*>(comp.data()), comp.size(), ret);
 	server_chap_.chap_str_.assign(reinterpret_cast<char*>(ret), 16);
