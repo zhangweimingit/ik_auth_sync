@@ -56,7 +56,6 @@ void auth_message::constuct_check_client_res_msg()
 	root.put("res1_", server_chap_.res1_);
 	root.put("chap_str_", string_to_base16(server_chap_.chap_str_));
 	write_json(output, root);
-	std::cout << string_to_base16(server_chap_.chap_str_) << std::endl;
 	send_body_ = output.str();
 
 	set_header(CHECK_CLIENT_RESPONSE);
@@ -84,15 +83,12 @@ void auth_message::parse_check_client_req_msg()
 		throw runtime_error("chap length error");
 	}
 
-	std::cout << client_chap.chap_str_ << std::endl;
-
 	md5 md5;
 	uint8_t ret[16];
 	string comp = client_chap.chap_str_ + config.server_pwd_;
 
 	md5.md5_once(const_cast<char*>(comp.data()), comp.size(), ret);
 	server_chap_.chap_str_.assign(reinterpret_cast<char*>(ret), 16);
-	std::cout << server_chap_.chap_str_.size() << std::endl;
 	server_chap_.gid_  = config.gid;
 	server_chap_.res1_ = 0;
 }
@@ -135,13 +131,14 @@ void auth_message::parse_auth_res_msg(auth_info& auth)
 
 std::string auth_message::string_to_base16(const std::string& str)
 {
-	std::stringstream stream;
-	stream << std::hex << std::setfill('0');
+	std::string buffer(str.size() * 2 + 1, 0);
 
-	for (auto& c : str)
-		stream << std::setw(2) << (int)c;
-
-	return stream.str();
+	for (uint32_t i = 0; i < str.size(); i++)
+	{
+		snprintf(&buffer[i * 2], 3, "%02x", str[i]);
+	}
+	buffer.pop_back();
+	return buffer;
 }
 
 std::string auth_message::base16_to_string(const std::string& str)
