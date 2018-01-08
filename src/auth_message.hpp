@@ -45,17 +45,6 @@ struct auth_info
 	uint32_t auth_time_;      
 	uint32_t res1_;// reserve
 	uint32_t res2_;// reserve
-
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & mac_;
-		ar & attr_;
-		ar & duration_;
-		ar & auth_time_;
-		ar & res1_;
-		ar & res2_;
-	}
 };
 
 //Challenge Handshake Authentication Protocol
@@ -64,14 +53,6 @@ struct chap
 	uint32_t gid_; //Clients report their group ID
 	uint32_t res1_;// reserve
 	std::string chap_str_;//Encrypting data by MD5 algorithm
-
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & gid_;
-		ar & res1_;
-		ar & chap_str_;
-	}
 };
 
 class auth_message
@@ -89,6 +70,9 @@ public:
 
 private:
 	friend class client;
+
+	std::string string_to_base16(const std::string& str);
+	std::string base16_to_string(const std::string& str);
 
 	union 
 	{
