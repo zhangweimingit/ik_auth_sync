@@ -57,7 +57,7 @@ void auth_message::constuct_check_client_res_msg()
 	root.put("chap_str_", string_to_base16(server_chap_.chap_str_));
 	write_json(output, root);
 	send_body_ = output.str();
-	std::cout << string_to_base16(server_chap_.chap_str_) << std::endl;
+
 	set_header(CHECK_CLIENT_RESPONSE);
 	send_buffers_.clear();
 	send_buffers_.push_back(boost::asio::buffer(header_buffer_));
@@ -77,8 +77,6 @@ void auth_message::parse_check_client_req_msg()
 	client_chap.gid_ = root.get<uint32_t>("gid_");
 	client_chap.res1_ = root.get<uint32_t>("res1_");
 	client_chap.chap_str_ = base16_to_string(root.get<string>("chap_str_"));
-
-	std::cout << client_chap.chap_str_ << std::endl;
 
 	if (client_chap.chap_str_.size() != 32)
 	{
@@ -131,25 +129,22 @@ void auth_message::parse_auth_res_msg(auth_info& auth)
 	auth.res2_ = root.get<uint32_t>("res2_");
 }
 
-std::string auth_message::string_to_base16(const std::string& str)
+string auth_message::string_to_base16(const string& str)
 {
-	std::string buffer(str.size() * 2, 0);
+	string buffer(str.size() * 2, 0);
 	buffer.reserve(str.size() * 2 + 1);
 
 	for (uint32_t i = 0; i < str.size(); i++)
 	{
-		snprintf(&buffer[i * 2], 3, "%02x", (uint8_t)str[i]);
+		snprintf(&buffer[i * 2], 3, "%02x", static_cast<uint8_t>(str[i]));
 	}
 	return buffer;
 }
 
-std::string auth_message::base16_to_string(const std::string& str)
+string auth_message::base16_to_string(const string& str)
 {
-	if (str.size() % 2 != 0)
-		return str;
-
 	uint32_t v;
-	std::string buffer;
+	string buffer;
 	for (uint32_t i = 0; i < str.size() / 2; i++)
 	{
 		sscanf(&str[0] + 2 * i, "%2x", &v);
