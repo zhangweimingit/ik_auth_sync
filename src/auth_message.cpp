@@ -56,7 +56,7 @@ void auth_message::constuct_check_client_res_msg()
 	root.put("res1_", server_chap_.res1_);
 	root.put("chap_str_", string_to_base16(server_chap_.chap_str_));
 	write_json(output, root);
-	std::cout << server_chap_.chap_str_ << std::endl;
+	std::cout << string_to_base16(server_chap_.chap_str_) << std::endl;
 	send_body_ = output.str();
 
 	set_header(CHECK_CLIENT_RESPONSE);
@@ -92,6 +92,7 @@ void auth_message::parse_check_client_req_msg()
 
 	md5.md5_once(const_cast<char*>(comp.data()), comp.size(), ret);
 	server_chap_.chap_str_.assign(reinterpret_cast<char*>(ret), 16);
+	std::cout << server_chap_.chap_str_.size() << std::endl;
 	server_chap_.gid_  = config.gid;
 	server_chap_.res1_ = 0;
 }
