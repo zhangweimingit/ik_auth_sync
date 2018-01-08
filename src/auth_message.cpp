@@ -57,7 +57,7 @@ void auth_message::constuct_check_client_res_msg()
 	root.put("chap_str_", string_to_base16(server_chap_.chap_str_));
 	write_json(output, root);
 	send_body_ = output.str();
-
+	std::cout << string_to_base16(server_chap_.chap_str_) << std::endl;
 	set_header(CHECK_CLIENT_RESPONSE);
 	send_buffers_.clear();
 	send_buffers_.push_back(boost::asio::buffer(header_buffer_));
@@ -77,6 +77,8 @@ void auth_message::parse_check_client_req_msg()
 	client_chap.gid_ = root.get<uint32_t>("gid_");
 	client_chap.res1_ = root.get<uint32_t>("res1_");
 	client_chap.chap_str_ = base16_to_string(root.get<string>("chap_str_"));
+
+	std::cout << client_chap.chap_str_ << std::endl;
 
 	if (client_chap.chap_str_.size() != 32)
 	{
